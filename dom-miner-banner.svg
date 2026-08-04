@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 180" width="800" height="180">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+    <linearGradient id="text" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#58a6ff"/>
+      <stop offset="50%" stop-color="#bc8cff"/>
+      <stop offset="100%" stop-color="#f778ba"/>
+    </linearGradient>
+    <linearGradient id="sub" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8b949e"/>
+      <stop offset="100%" stop-color="#c9d1d9"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="800" height="180" rx="12" fill="url(#bg)"/>
+  <text x="400" y="72" text-anchor="middle" font-family="'Segoe UI', system-ui, sans-serif" font-size="56" font-weight="700" fill="url(#text)" filter="url(#glow)">DOM</text>
+  <text x="400" y="120" text-anchor="middle" font-family="'Segoe UI', system-ui, sans-serif" font-size="48" font-weight="300" fill="url(#text)" letter-spacing="12" filter="url(#glow)">MINER</text>
+  <line x1="280" y1="132" x2="520" y2="132" stroke="url(#text)" stroke-width="1.5" opacity="0.4"/>
+  <text x="400" y="158" text-anchor="middle" font-family="'Segoe UI', system-ui, sans-serif" font-size="14" fill="url(#sub)" letter-spacing="2">MINE ANY WEBSITE INTO COMPACT DOM MAPS FOR QA</text>
+</svg>

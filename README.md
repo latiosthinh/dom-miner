@@ -1,24 +1,6 @@
 # dom-miner
 
-```
-╔═══════════════════════════════════════════════════════════════════════════════════╗
-║                                                                                   ║
-║  ██████╗   ██████╗  ██╗  ██╗     ██╗  ██╗  ████╗   ██╗   ██╗ ███████╗ ██████╗   ║
-║  ██╔══██╗ ██╔═══██╗ ██║  ██║     ██║  ██║    ██║   ██║   ██║ ██╔════╝ ██╔══██╗  ║
-║  ██║  ██║ ██║   ██║ ██║  ██║     ██║  ██║    ██║   ██║   ██║ ██████╗  ██║  ██║  ║
-║  ██║  ██║ ██║   ██║ ██║  ██║     ██║  ██║    ██║   ██║   ██║ ██╔══╝   ██████╔╝  ║
-║  ██████╔╝ ╚██████╔╝ ╚██████╔╝    ╚██████╔╝   ██║   ╚██████╔╝ ███████╗ ██║  ██╗  ║
-║  ╚═════╝   ╚═════╝   ╚═════╝      ╚═════╝    ╚═╝    ╚═════╝  ╚══════╝ ╚═╝  ╚═╝  ║
-║                                                                                   ║
-║                ┌─┐┌─┐┬┌┐┌┌─┐┌─┐┬─┐┌─┐                                           ║
-║                │ │├┤ │││││ ││ │├┬┘├┤                                            ║
-║                └─┘└─┘┴┘└┘└─┘└─┘┴└─└─┘                                           ║
-║                                                                                   ║
-║  Mine any website into a compact, LLM-friendly                                  ║
-║  DOM map for QA test plans and AI agents                                        ║
-║                                                                                   ║
-╚═══════════════════════════════════════════════════════════════════════════════════╝
-```
+![dom-miner banner](dom-miner-banner.svg)
 
 **dom-miner** turns any website into a compact, structured DOM map — the perfect input for QA test-plan generation, AI agents, and test-case authoring. Skip the raw HTML noise. Get only the elements that matter, with numeric IDs, regions, and Playwright-ready locators.
 
