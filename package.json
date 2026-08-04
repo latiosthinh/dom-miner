@@ -1,0 +1,60 @@
+{
+  "name": "dom-miner",
+  "version": "0.1.0",
+  "description": "dom-miner — mine any site into a compact DOM map for QA test plans and AI agents",
+  "type": "module",
+  "bin": {
+    "dom-miner": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "npm run build",
+    "test": "node --test \"test/*.test.mjs\"",
+    "pretest": "npm run build",
+    "dom-miner": "node dist/cli.js",
+    "dom-miner:explore": "dom-miner explore",
+    "dom-miner:site": "dom-miner explore site",
+    "dom-miner:page": "dom-miner explore page",
+    "dom-miner:urls": "dom-miner explore urls",
+    "dom-miner:dump": "dom-miner dump",
+    "dom-miner:compact": "dom-miner compact",
+    "dom-miner:deep": "dom-miner deep",
+    "dom-miner:read": "dom-miner read",
+    "dom-miner:benchmark": "dom-miner benchmark"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.0 || ^17.0.0"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.62.0",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0"
+  },
+  "keywords": [
+    "playwright",
+    "qa",
+    "sitemap",
+    "dom",
+    "dom-miner",
+    "test-plan",
+    "agent",
+    "ai-testing",
+    "llm"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,12 @@
+node_modules/
+*.tsbuildinfo
+dist/
+.env
+data/
+test-output/
+
+# dom-miner
+data/dom-miner/
+!data/dom-miner/.gitkeep
+test-output/dom-miner/
+test-output/sitemap/
