@@ -1,6 +1,6 @@
 {
   "name": "dom-miner",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "dom-miner — mine any site into a compact DOM map for QA test plans and AI agents",
   "type": "module",
   "bin": {
@@ -21,7 +21,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepare": "npm run build",
-    "test": "node --test \"test/*.test.mjs\"",
+    "test": "node --test test/",
     "pretest": "npm run build",
     "dom-miner": "node dist/cli.js",
     "dom-miner:explore": "dom-miner explore",
