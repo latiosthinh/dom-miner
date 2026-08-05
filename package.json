@@ -21,7 +21,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepare": "npm run build",
-    "test": "node --test test/",
+    "test": "node --test test/*.test.mjs",
     "pretest": "npm run build",
     "dom-miner": "node dist/cli.js",
     "dom-miner:explore": "dom-miner explore",
