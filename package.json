@@ -1,6 +1,6 @@
 {
   "name": "dom-miner",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "dom-miner — mine any site into a compact DOM map for QA test plans and AI agents",
   "type": "module",
   "bin": {
