@@ -10,6 +10,7 @@ import { runDeepInventory } from './deep-inventory.js';
 import { expandUi } from './expand-ui.js';
 import { estimateTokens, byteLength, summarizeCompact, summarizeDeep } from './metrics.js';
 import { settlePage } from './settle-page.js';
+import { authenticate } from './authenticate.js';
 
 export function pageIdFromUrl(url, index = 0) {
   try {
@@ -47,6 +48,7 @@ export function writeJsonOrText(file, content) {
  * @param {string} opts.root - repo root
  * @param {string} opts.stem
  * @param {string[]} opts.urls
+ * @param {Map<string, {username: string, password: string}>} [opts.urlCredentials]
  * @param {boolean} [opts.withDeep]
  * @param {boolean} [opts.headed]
  * @param {number} [opts.settleMs]
@@ -58,7 +60,7 @@ export function writeJsonOrText(file, content) {
  * @param {boolean} [opts.expand]
  * @param {boolean} [opts.includeCollapsedNav]
  * @param {boolean} [opts.skipExisting]
- * @param {import('playwright').Browser} [opts.browser] - reuse browser if provided
+ * @param {import('playwright-core').Browser} [opts.browser] - reuse browser if provided
  * @param {object} [opts.extraManifest] - merged into manifest.json
  */
 export async function dumpPagesToData(opts) {
@@ -66,6 +68,7 @@ export async function dumpPagesToData(opts) {
     root,
     stem,
     urls,
+    urlCredentials = new Map(),
     withDeep = false,
     headed = false,
     settleMs = 1500,
@@ -156,6 +159,21 @@ export async function dumpPagesToData(opts) {
       console.error(`Dumping ${i + 1}/${urls.length} ${pageId}: ${url}`);
       const t0 = performance.now();
       let settleMeta = null;
+      let authMeta = null;
+
+      // Authenticate if credentials provided
+      const urlKey = String(url).replace(/\/$/, '');
+      const credential = urlCredentials.get(urlKey);
+      if (credential) {
+        console.error(`  Authenticating...`);
+        authMeta = await authenticate(page, credential);
+        if (!authMeta.ok) {
+          console.error(`  auth failed: ${authMeta.errors.join(', ')}`);
+        } else {
+          console.error(`  auth ok (method: ${authMeta.method})`);
+        }
+      }
+
       try {
         settleMeta = await settlePage(page, {
           url,

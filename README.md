@@ -106,6 +106,40 @@ Thin-shell auto-retry is **on by default** when the page looks empty after initi
 | `.csv` | `url` column or first column |
 | `.json` | `string[]`, `{ urls: [...] }`, or dom-miner `urls-full.json` |
 
+## Batch JSON Files (`--batch-file`)
+
+For exploring multiple URLs with optional authentication, pass a JSON file:
+
+```bash
+dom-miner explore urls --batch-file sites.json --stem myapp
+```
+
+**Format:**
+```json
+[
+  { "url": "https://example.com/" },
+  { "url": "https://app.example.com/dashboard", "credential": { "username": "admin", "password": "secret" } },
+  { "url": "https://app.example.com/settings", "credential": { "username": "admin", "password": "secret" } }
+]
+```
+
+Or as a single entry:
+```json
+{ "url": "https://example.com/", "credential": { "username": "user", "password": "pass" } }
+```
+
+When credentials are provided, dom-miner will:
+1. Navigate to the URL
+2. Auto-detect the login form (username + password fields)
+3. Fill credentials and submit
+4. Proceed with DOM exploration on the authenticated page
+
+**Supported batch formats:**
+- `{ url, credential? }` — single entry
+- `[{ url, credential? }, ...]` — array
+- `{ urls: [{ url, credential? }] }` — wrapped
+- `{ pages: [{ url, credential? }] }` — from dom-miner output
+
 ## Other Commands
 
 | Command | What |

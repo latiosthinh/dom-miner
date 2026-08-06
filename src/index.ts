@@ -11,3 +11,5 @@ export { runDeepInventory } from './lib/deep-inventory.js';
 export { expandUi } from './lib/expand-ui.js';
 export { settlePage, probePageRichness, isThinShell, scrollPageForLazy, detectInterstitialPage } from './lib/settle-page.js';
 export { loadUrlsFromFile } from './lib/parse-url-list.js';
+export { loadBatchFile } from './lib/parse-batch-json.js';
+export { authenticate, isLoginPage } from './lib/authenticate.js';

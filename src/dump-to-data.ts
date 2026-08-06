@@ -14,6 +14,7 @@ import dotenv from 'dotenv';
 import { dumpPagesToData } from './lib/dump-pages.js';
 import { stemFromUrl, sanitizeStem } from './lib/discover-urls.js';
 import { loadUrlsFromFile } from './lib/parse-url-list.js';
+import { loadBatchFile } from './lib/parse-batch-json.js';
 import { findRepoRoot } from './lib/root.js';
 
 dotenv.config({ quiet: true });
@@ -24,6 +25,7 @@ function parseArgs(argv) {
   const urls = [];
   let stem = '';
   let urlsFile = '';
+  let batchFile = '';
   let exploreMode = ''; // '' | 'page' | 'urls'
   let withDeep = false;
   let headed = false;
@@ -40,6 +42,7 @@ function parseArgs(argv) {
     if (a === '--url') urls.push(argv[++i]);
     else if (a === '--stem') stem = argv[++i];
     else if (a === '--urls-file' || a === '--file' || a === '-f') urlsFile = argv[++i];
+    else if (a === '--batch-file' || a === '--batch' || a === '-b') batchFile = argv[++i];
     else if (a === '--explore-mode') exploreMode = argv[++i];
     else if (a === '--with-deep') withDeep = true;
     else if (a === '--headed') headed = true;
@@ -57,6 +60,7 @@ function parseArgs(argv) {
     urls,
     stem,
     urlsFile,
+    batchFile,
     exploreMode,
     withDeep,
     headed,
@@ -78,15 +82,21 @@ Usage:
   dom-miner explore page --url <url> [--stem <name>]
   dom-miner explore urls --urls-file <file> [--stem <name>]
   dom-miner explore urls --url <u1> --url <u2> [--stem <name>]
+  dom-miner explore urls --batch-file <file> [--stem <name>]
   dom-miner dump --url <u> [--urls-file <file>]   # same engine
 
 Options:
   --url                 Page URL (repeatable for urls mode)
   --urls-file, -f       .txt / .csv / .json URL list
+  --batch-file, -b      .json batch file with credentials [{url, credential?}]
   --stem                Output folder under data/dom-miner/ (default: from first host)
   --with-deep           Also write deep.json
   --spa / --ready / --wait-until / --scroll / --settle-ms
   --no-expand / --no-collapsed-nav / --no-skip-existing / --headed
+
+Batch JSON format:
+  { "url": "https://example.com", "credential": { "username": "user", "password": "pass" } }
+  [{ "url": "https://a.com" }, { "url": "https://b.com", "credential": {...} }]
 
 For full-site sitemap explore:
   dom-miner explore site --url <homepage> [--top 50]
@@ -102,10 +112,25 @@ async function main() {
 
   let urls = [...(args.urls || [])];
   let urlsFileMeta = null;
+  let batchMeta = null;
+  let urlCredentials = new Map(); // url -> credential
+
+  if (args.batchFile) {
+    batchMeta = loadBatchFile(args.batchFile);
+    for (const entry of batchMeta.entries) {
+      const urlKey = entry.url.replace(/\/$/, '');
+      if (entry.credential) {
+        urlCredentials.set(urlKey, entry.credential);
+      }
+      if (!urls.includes(entry.url)) {
+        urls.push(entry.url);
+      }
+    }
+  }
 
   if (args.urlsFile) {
     urlsFileMeta = loadUrlsFromFile(args.urlsFile);
-    urls = [...urlsFileMeta.urls, ...urls];
+    urls = [...urlsFileMeta.urls, ...urls.filter((u) => !urlsFileMeta.urls.includes(u))];
   }
 
   if (!urls.length) {
@@ -153,13 +178,15 @@ async function main() {
 
   console.error(
     `Explore ${exploreMode}: ${urls.length} URL(s) → data/dom-miner/${stem}/` +
-      (urlsFileMeta ? ` (from ${path.relative(ROOT, urlsFileMeta.source) || urlsFileMeta.source})` : ''),
+      (urlsFileMeta ? ` (from ${path.relative(ROOT, urlsFileMeta.source) || urlsFileMeta.source})` : '') +
+      (batchMeta ? ` (from ${path.relative(ROOT, batchMeta.source) || batchMeta.source})` : ''),
   );
 
   const { outRoot, manifest } = await dumpPagesToData({
     root: ROOT,
     stem,
     urls,
+    urlCredentials,
     withDeep: args.withDeep,
     headed: args.headed,
     settleMs: args.settleMs,
@@ -178,6 +205,11 @@ async function main() {
           ? path.relative(ROOT, urlsFileMeta.source).replace(/\\/g, '/')
           : undefined,
         urlsFileFormat: urlsFileMeta?.format,
+        batchFile: batchMeta
+          ? path.relative(ROOT, batchMeta.source).replace(/\\/g, '/')
+          : undefined,
+        batchFileFormat: batchMeta?.format,
+        authenticatedCount: urlCredentials.size,
       },
     },
   });
@@ -193,8 +225,12 @@ async function main() {
         skippedExisting: manifest.skippedExisting,
         failed: manifest.failed,
         blocked: manifest.blocked,
+        authenticatedCount: urlCredentials.size,
         urlsFile: urlsFileMeta
           ? path.relative(ROOT, urlsFileMeta.source).replace(/\\/g, '/')
+          : undefined,
+        batchFile: batchMeta
+          ? path.relative(ROOT, batchMeta.source).replace(/\\/g, '/')
           : undefined,
       },
       null,
