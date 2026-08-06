@@ -140,6 +140,32 @@ When credentials are provided, dom-miner will:
 - `{ urls: [{ url, credential? }] }` — wrapped
 - `{ pages: [{ url, credential? }] }` — from dom-miner output
 
+## Global Authentication (`--username` / `--password`)
+
+For authenticated exploration of an entire site or URL list, provide credentials once:
+
+```bash
+# Single URL with auth
+dom-miner explore page --url https://app.example.com/ -u admin -p secret --stem myapp
+
+# Multiple URLs with auth (credentials applied to all)
+dom-miner explore urls \
+  --url https://app.example.com/dashboard \
+  --url https://app.example.com/settings \
+  -u admin -p secret --stem myapp
+
+# Full site with auth (discover + dump all pages)
+dom-miner explore site --url https://app.example.com/ -u admin -p secret --top 40
+
+# Batch file with global auth (global overrides per-URL credentials)
+dom-miner explore urls --batch-file sites.json -u admin -p secret --stem myapp
+```
+
+When `--username` / `--password` are provided:
+1. **Authenticate once** at the start (auto-detects login form, or use `--login-url`)
+2. **Reuse the session** for all URL exploration
+3. All pages are dumped with the authenticated browser context
+
 ## Other Commands
 
 | Command | What |

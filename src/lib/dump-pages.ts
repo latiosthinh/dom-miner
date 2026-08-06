@@ -49,6 +49,8 @@ export function writeJsonOrText(file, content) {
  * @param {string} opts.stem
  * @param {string[]} opts.urls
  * @param {Map<string, {username: string, password: string}>} [opts.urlCredentials]
+ * @param {{username: string, password: string}} [opts.globalCredential] - applies to all URLs
+ * @param {string} [opts.loginUrl] - explicit login page URL
  * @param {boolean} [opts.withDeep]
  * @param {boolean} [opts.headed]
  * @param {number} [opts.settleMs]
@@ -69,6 +71,8 @@ export async function dumpPagesToData(opts) {
     stem,
     urls,
     urlCredentials = new Map(),
+    globalCredential = null,
+    loginUrl,
     withDeep = false,
     headed = false,
     settleMs = 1500,
@@ -91,6 +95,18 @@ export async function dumpPagesToData(opts) {
   const browser = existingBrowser || (await chromium.launch({ headless: !headed }));
   const context = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
   const page = await context.newPage();
+
+  // Global authentication: once before the loop, session reused for all URLs
+  let globalAuthMeta = null;
+  if (globalCredential) {
+    console.error(`Authenticating as ${globalCredential.username}...`);
+    globalAuthMeta = await authenticate(page, globalCredential, { loginUrl });
+    if (!globalAuthMeta.ok) {
+      console.error(`  auth failed: ${globalAuthMeta.errors.join(', ')}`);
+    } else {
+      console.error(`  auth ok (method: ${globalAuthMeta.method})`);
+    }
+  }
 
   const pages = [];
   let skipped = 0;
@@ -161,16 +177,18 @@ export async function dumpPagesToData(opts) {
       let settleMeta = null;
       let authMeta = null;
 
-      // Authenticate if credentials provided
-      const urlKey = String(url).replace(/\/$/, '');
-      const credential = urlCredentials.get(urlKey);
-      if (credential) {
-        console.error(`  Authenticating...`);
-        authMeta = await authenticate(page, credential);
-        if (!authMeta.ok) {
-          console.error(`  auth failed: ${authMeta.errors.join(', ')}`);
-        } else {
-          console.error(`  auth ok (method: ${authMeta.method})`);
+      // Per-URL authentication (only if no global credential and batch file has per-URL creds)
+      if (!globalCredential) {
+        const urlKey = String(url).replace(/\/$/, '');
+        const credential = urlCredentials.get(urlKey);
+        if (credential) {
+          console.error(`  Authenticating...`);
+          authMeta = await authenticate(page, credential, { loginUrl });
+          if (!authMeta.ok) {
+            console.error(`  auth failed: ${authMeta.errors.join(', ')}`);
+          } else {
+            console.error(`  auth ok (method: ${authMeta.method})`);
+          }
         }
       }
 
