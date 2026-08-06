@@ -30,14 +30,14 @@ export async function authenticate(page, credential, opts = {}) {
 
   try {
     // Try filling the most common form pattern
-    const usernameInput = await page.$(usernameSelector.split(',')[0].trim());
+    const usernameInput = await findFirst(page, usernameSelector);
     const passwordInput = await page.$(passwordSelector);
 
     if (usernameInput && passwordInput) {
       await usernameInput.fill(credential.username);
       await passwordInput.fill(credential.password);
 
-      const submitBtn = await page.$(submitSelector.split(',')[0].trim());
+      const submitBtn = await findFirst(page, submitSelector);
       if (submitBtn) {
         await submitBtn.click();
       } else {
@@ -71,6 +71,15 @@ export async function authenticate(page, credential, opts = {}) {
     result.errors.push(String(err?.message || err));
     return result;
   }
+}
+
+/** Find the first visible element matching any of the comma-separated selectors. */
+async function findFirst(page, selectorStr) {
+  for (const sel of selectorStr.split(',').map((s) => s.trim())) {
+    const el = await page.$(sel);
+    if (el && (await el.isVisible())) return el;
+  }
+  return null;
 }
 
 /**

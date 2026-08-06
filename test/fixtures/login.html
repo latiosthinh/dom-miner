@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test Login</title></head>
+<body>
+  <form id="login-form" action="/login" method="post">
+    <input type="email" name="email" id="email" placeholder="Email">
+    <input type="password" name="password" id="password" placeholder="Password">
+    <button type="submit">Sign In</button>
+  </form>
+  <script>
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      document.body.innerHTML = '<h1>Authenticated</h1><p id="user">user: ' + document.getElementById('email').value + '</p>';
+    });
+  </script>
+</body>
+</html>
